@@ -1,0 +1,4 @@
+.capture-profile/
+server.log
+tools/*-commands.json
+tools/live-title.jpg

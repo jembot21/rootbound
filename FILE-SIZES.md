@@ -1,0 +1,32 @@
+# File sizes
+
+| File | Bytes |
+| --- | ---: |
+| `.gitignore` | 72 |
+| `LICENSE` | 1,095 |
+| `README.md` | 4,048 |
+| `game/index.html` | 986 |
+| `game/src/audio.js` | 733 |
+| `game/src/beds.js` | 2,525 |
+| `game/src/drawing.js` | 1,945 |
+| `game/src/hud.js` | 2,193 |
+| `game/src/main.js` | 6,826 |
+| `game/src/particles.js` | 789 |
+| `game/src/pests.js` | 3,161 |
+| `game/src/rng.js` | 320 |
+| `game/src/roots.js` | 3,886 |
+| `game/src/screens.js` | 5,556 |
+| `game/src/soil.js` | 2,447 |
+| `game/src/water.js` | 1,585 |
+| `game/style.css` | 352 |
+| `main.ts` | 1,228 |
+| `screenshots/1-cover.jpg` | 208,206 |
+| `screenshots/2-title.jpg` | 198,034 |
+| `screenshots/3-boss.jpg` | 205,787 |
+| `screenshots/4-end.jpg` | 138,751 |
+| `serve.ts` | 2,612 |
+| `shots.json` | 208 |
+| `tools/rasterize-scenes.py` | 1,708 |
+| `tools/render-scenes.cjs` | 2,951 |
+| `tools/verify-game.cjs` | 2,382 |
+| `vendor/makefun-game.ts` | 56,282 |

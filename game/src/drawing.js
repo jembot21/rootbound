@@ -1,0 +1,9 @@
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const C={ink:'#493923',cream:'#fff0cd',paper:'#ebd8ae',gold:'#efbd48',teal:'#76ddd0',green:'#5f7845',rust:'#aa5237'};
+function ellipse(x,y,rx,ry,fill,stroke=C.ink,lw=2){ctx.beginPath();ctx.ellipse(x,y,Math.max(.1,rx),Math.max(.1,ry),0,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke();}}
+function line(points,color,width=2){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x??p[0],p.y??p[1]):ctx.moveTo(p.x??p[0],p.y??p[1]));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+function panel(x,y,w,h,fill=C.cream,stroke=C.ink){ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,w,h,12);ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
+function text(s,x,y,size=20,color=C.ink,align='left',serif=false){ctx.fillStyle=color;ctx.font=`${serif?'bold':'600'} ${size}px ${serif?'Georgia':'Trebuchet MS, sans-serif'}`;ctx.textAlign=align;ctx.fillText(s,x,y);}
+function leaf(x,y,s=1,flip=1){ctx.save();ctx.translate(x,y);ctx.scale(s*flip,s);ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(-5,-32,40,-24);ctx.quadraticCurveTo(32,6,0,0);ctx.fillStyle=C.green;ctx.fill();ctx.strokeStyle='#344e32';ctx.lineWidth=2;ctx.stroke();line([[0,0],[30,-20]],'#a8b877',2);ctx.restore();}
+function sunflower(x,y,s=1,wilt=false){ctx.save();ctx.translate(x,y);ctx.scale(s,s);line([[0,130],[8,75],[wilt?32:0,0]],'#536c3d',10);leaf(4,85,1);leaf(4,110,.8,-1);ctx.translate(wilt?32:0,0);for(let i=0;i<15;i++){ctx.save();ctx.rotate(i*Math.PI*2/15);ellipse(0,-36,12,29,wilt?'#b39658':'#f6c24b','#a16b2e');ctx.restore();}ellipse(0,0,28,28,'#684a31');for(let i=0;i<38;i++){const a=i*2.4,r=4*Math.sqrt(i);ellipse(Math.cos(a)*r,Math.sin(a)*r,1.5,1.5,'#e0a858',null);}ctx.restore();}
+function ribbon(s,x,y,w=230){panel(x,y,w,31,'#f6dfaa');text(s,x+w/2,y+22,15,C.ink,'center');}

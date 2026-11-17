@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict'),vm=require('node:vm');
+const {recordScene}=require('./render-scenes.cjs');const box=recordScene('');const run=s=>vm.runInContext(s,box);
+run('muted=true;beginSeededRun()');assert.equal(run('G.mode'),'play');
+run('G.pools=[]');const start=run('G.tip.y');run('for(let i=0;i<60;i++)updateRootbound(1/60)');assert.ok(run('G.tip.y')>start);assert.ok(run('G.water')<100);
+assert.equal(run('pointInsideRootLoop({x:5,y:5},[{x:0,y:0},{x:10,y:0},{x:10,y:10},{x:0,y:10}])'),true);
+assert.equal(run('pointInsideRootLoop({x:15,y:5},[{x:0,y:0},{x:10,y:0},{x:10,y:10},{x:0,y:10}])'),false);
+run(`G.path=[];for(let i=0;i<=25;i++)G.path.push({x:100+i*4,y:100});for(let i=1;i<=25;i++)G.path.push({x:200,y:100+i*4});for(let i=1;i<=25;i++)G.path.push({x:200-i*4,y:200});for(let i=1;i<=23;i++)G.path.push({x:100,y:200-i*4});G.pests=[{x:150,y:150,type:1,cracks:0,hit:0,dead:false}];detectGeometricCoilClosure({x:100,y:108},{x:100,y:98});`);
+assert.equal(run('G.pests[0].dead'),true);assert.equal(run('G.coiled'),1);
+run('setupLivingBed(5);G.pests=[{x:150,y:150,type:7,cracks:0,hit:0,dead:false}];');
+run(`const coilPath=[];for(let i=0;i<=25;i++)coilPath.push({x:100+i*4,y:100});for(let i=1;i<=25;i++)coilPath.push({x:200,y:100+i*4});for(let i=1;i<=25;i++)coilPath.push({x:200-i*4,y:200});for(let i=1;i<=23;i++)coilPath.push({x:100,y:200-i*4});G.path=coilPath;for(let i=0;i<3;i++){G.coilCooldown=0;G.pests[0].hit=0;detectGeometricCoilClosure({x:100,y:108},{x:100,y:98});}`);assert.equal(run('G.pests[0].cracks'),3);assert.equal(run('G.pests[0].dead'),true);
+run('beginSeededRun();G.water=20;G.tip={...G.pools[0]};drinkWaterAndGatherNutrients(1)');assert.ok(run('G.water')>20);
+run('completeBed()');assert.equal(run('G.mode'),'upgrade');run('chooseUpgrade(0)');assert.equal(run('G.bed'),1);
+run("G.mode='paused';const frozen=G.time;updateRootbound(1)");assert.equal(run('G.time===frozen'),true);
+run("G.up={};witherOrScorch('test')");assert.equal(run('G.mode'),'lose');run("beginSeededRun();G.up.revive=true;witherOrScorch('test')");assert.equal(run('G.mode'),'play');assert.equal(run('G.water'),60);
+run('setupLivingBed(5);G.pests=[];completeBed()');assert.equal(run('G.mode'),'win');
+console.log('PASS: rendering all scenes, growth, resource use, polygon exclusion, actual coil crossing, three-hit boss, drinking, upgrades, pause, loss, revival and victory.');
