@@ -1,27 +1,36 @@
-import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import * as filesystem from 'node:fs';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
 
-const here = fileURLToPath(new URL('.', import.meta.url));
-const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const entryDirectory = fileURLToPath(new URL('.', import.meta.url));
+const destinationDirectory = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-mkdirSync(out, { recursive: true });
-cpSync(join(here, 'game'), join(out, 'game'), { recursive: true });
-mkdirSync(join(out, 'screenshots'), { recursive: true });
-if (existsSync(join(here, 'screenshots'))) cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
+function transferFolder(name: string, optional = false): void {
+  const source = resolve(entryDirectory, name);
+  if (optional && !filesystem.existsSync(source)) return;
+  if (!filesystem.statSync(source).isDirectory()) {
+    throw new Error(`Submission content must be a directory: ${source}`);
+  }
+  filesystem.cpSync(source, resolve(destinationDirectory, name), {
+    recursive: true,
+  });
+}
 
-// The scorer's own caps (reference/gate.json): only text_max_bytes shapes the bytes; the others refuse an entry the
-// scorer would refuse (more than 4 screenshots or one over 256 KiB; more than 993 files in game/ or 48 MiB of game
-// files, in all, or a path under game/ over 1000 bytes: game/ counts beside /output's own 1000-entry cap, its
-// screenshots/ and dossier.json).
-writeFileSync(
-  join(out, 'dossier.json'),
-  buildDossier(out, {
+function assembleSubmission(): void {
+  filesystem.mkdirSync(destinationDirectory, { recursive: true });
+  transferFolder('game');
+  transferFolder('screenshots', true);
+
+  // Describe the files actually delivered, using the competition's exact limits.
+  const dossierBytes = buildDossier(destinationDirectory, {
     text_max_bytes: 163840,
     screenshots: { max: 4, max_bytes: 262144 },
     game_max_files: 993,
     game_max_bytes: 50331648,
     game_path_max_bytes: 1000,
-  }),
-);
+  });
+  filesystem.writeFileSync(resolve(destinationDirectory, 'dossier.json'), dossierBytes);
+}
+
+assembleSubmission();
